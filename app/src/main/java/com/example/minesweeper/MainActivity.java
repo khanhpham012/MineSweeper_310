@@ -68,33 +68,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //search all of the block that has 0 mines
-    public ArrayList<Point> BFS(Block block){
+    public void BFS(Block block){
 
-        Queue<Point> queue = new LinkedList<>();
-        Set<Point> visited = new HashSet<>();
-        ArrayList<Point> result = new ArrayList<>();
-        Point p = block.getPoint();
+        Queue<Block> queue = new LinkedList<>();
+        Set<Block> visited = new HashSet<>();
+        ArrayList<Block> adjBlocks = new ArrayList<>();
 
-        queue.add(p); // starting point
+        queue.add(block); // starting point
 
         while(!queue.isEmpty()){
-            Point s = queue.peek();
+            Block s = queue.peek();
             queue.remove(s);
-            ArrayList<Point> adjBlocks = grid.getAdjBlocks(block);
-
-            for(Point node: adjBlocks){
-                if(!visited.contains(node)){
-                    Block findNode = grid.findBlock(node.x, node.y);
-                    int numMines = findNode.getAdjMine();
-                    if(numMines == 0 && !result.contains(node)){
-                        result.add(node);
+            ArrayList<Block> testBlocks = grid.getAdjBlocks(s);
+            if(visited.contains(s)){
+                continue;
+            }
+            visited.add(s);
+            for(Block adjBlock: testBlocks){
+                if(!visited.contains(adjBlock)){
+                    if(!adjBlocks.contains(adjBlock)){
+                        if(adjBlock.getAdjMine() == 0){
+                            queue.add(adjBlock);
+                        }
+                        adjBlocks.add(adjBlock);
                     }
-                    queue.add(node);
-                    visited.add(node);
                 }
             }
+            System.out.print("SIZE queue: " + queue.size());
         }
-        return result;
+
+        for(Block adjBlock: adjBlocks){
+
+            Point p = adjBlock.getPoint();
+            int row_p = p.x;
+            int col_p = p.y;
+            TextView neighbor = cell_tvs.get(row_p * COL + col_p);
+
+            adjBlock.setViewed(true);
+            neighbor.setText(String.valueOf(adjBlock.getAdjMine()));
+            neighbor.setTextColor(Color.BLACK);
+            neighbor.setBackgroundColor(Color.LTGRAY);
+        }
     }
 
     //switch between flag and axe mode
@@ -120,19 +134,15 @@ public class MainActivity extends AppCompatActivity {
         int col = n % COL;
         Block block = grid.findBlock(row, col);
 
-
-        if(axeMode && block.getAdjMine() == 0){
-            //find blocks that has 0 mines
-            ArrayList<Point> nodes = BFS(block);
-            for(Point node: nodes){
-                TextView neighbor = findTextView(node.x, node.y);
-                neighbor.setText("");
-                neighbor.setTextColor(Color.LTGRAY);
-                neighbor.setBackgroundColor(Color.LTGRAY);
-            }
+        //BFS
+        if(axeMode && block.getAdjMine() == 0 && !tv.getText().equals("\uD83D\uDEA9")){
+            tv.setText("");
+            tv.setTextColor(Color.LTGRAY);
+            tv.setBackgroundColor(Color.LTGRAY);
+            BFS(block);
         }
         //currently on axe mode and block does not have a mine
-        else if(axeMode && !block.getMine()){
+        if(axeMode && !block.getMine() && !tv.getText().equals("\uD83D\uDEA9")){
             String numMines = String.valueOf(block.getAdjMine());
 
             block.setViewed(true);
@@ -141,32 +151,32 @@ public class MainActivity extends AppCompatActivity {
             tv.setBackgroundColor(Color.LTGRAY);
         }
         //currently on axe mode and block has a mine
-        else if(axeMode && block.getMine()){
+        else if(axeMode && block.getMine() && !tv.getText().equals("\uD83D\uDEA9")){
             block.setViewed(true);
             tv.setText("\uD83D\uDCA3"); //place mine
             tv.setBackgroundColor(Color.RED);
             onClickStop(view); //stop the clock and output a message "Game over"
         }
+        //currently on flag mode and the user wants to remove the current flag with green block
+        else if(!axeMode  && tv.getText().equals("\uD83D\uDEA9")){ //&& !grid.placeFlag(block)
+            tv.setText("");
+        }
         //currently on flag mode and the user places a flag
-        else if (!axeMode && grid.placeFlag(block) && tv.getCurrentTextColor() == Color.GREEN) {
+        else if (!axeMode  && tv.getCurrentTextColor() == Color.GREEN) { //&& grid.placeFlag(block)
             tv.setText("\uD83D\uDEA9");
             //TextView timeView = (TextView) findViewById(R.id.textView10);
             //numFlags --; //insert logic for if flag count is less than 0
             //countFlags();
         }
-        //currently on flag mode and the user wants to remove the current flag with green block
-        else if(!axeMode && !grid.placeFlag(block) && tv.getText().equals("\uD83D\uDEA9")){
-            tv.setText("");
-        }
         //currently on axe mode and
-        else if (axeMode && tv.getCurrentTextColor() == Color.GREEN) {
+        else if (!axeMode && tv.getCurrentTextColor() == Color.GREEN && tv.getText().equals("\uD83D\uDEA9")) {
+            tv.setText("");
             tv.setTextColor(Color.LTGRAY);
             tv.setBackgroundColor(Color.LTGRAY);
         }
 
         onClickStart();
     }
-
 
     // save the TextViews of all cells in an array, so later on,
     // when a TextView is clicked, we know which cell it is

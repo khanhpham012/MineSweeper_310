@@ -32,15 +32,17 @@ public class Grid {
     public Block getBlock(int index){
         return blocks.get(index);
     }
+
     public Block findBlock(int row, int col){
         return blocks.get(row * COL + col);
     }
+
     public void placeMine(){
         Random rand = new Random();
         randomFour = new ArrayList<>();
 
         //Randomly create locations of four mines
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i < 4; i++) {
             int randomRow = rand.nextInt(10);
             int randomCol = rand.nextInt(8);
             Point node = new Point();
@@ -70,49 +72,49 @@ public class Grid {
         return false;
     }
     //return a list of adjacent block
-    public ArrayList<Point> getAdjBlocks(Block block) {
-        Point p = block.getPoint();
-        ArrayList<Point> adjacent = new ArrayList<>();
+    public ArrayList<Block> getAdjBlocks(Block block) {
+        Point p = block.getPoint(); //p.x -> row, p.y -> col
+        ArrayList<Block> adjBlocks = new ArrayList<>();
 
         //Left Block
         if (p.x - 1 >= 0 && p.y - 1 >= 0) {
-            Point aboveLeft = new Point(p.x - 1, p.y - 1);
-            adjacent.add(aboveLeft);
+            Block aboveLeft = findBlock( p.x - 1, p.y - 1);
+            adjBlocks.add(aboveLeft);
         }
         if (p.y - 1 >= 0) {
-            Point aboveCenter = new Point(p.x, p.y - 1);
-            adjacent.add(aboveCenter);
+            Block aboveCenter = findBlock(p.x,p.y - 1 );
+            adjBlocks.add(aboveCenter);
         }
-        if (p.x + 1 < COL && p.y - 1 >= 0) {
-            Point aboveRight = new Point(p.x + 1, p.y - 1);
-            adjacent.add(aboveRight);
+        if (p.x + 1 < ROW && p.y - 1 >= 0) {
+            Block aboveRight = findBlock(p.x + 1, p.y - 1);
+            adjBlocks.add(aboveRight);
         }
 
         //Center Block
         if(p.x - 1 >= 0) {
-            Point centerLeft = new Point(p.x - 1, p.y);
-            adjacent.add(centerLeft);
+            Block centerLeft = findBlock(p.x - 1, p.y);
+            adjBlocks.add(centerLeft);
         }
-        if(p.x + 1 < COL){
-            Point centerRight = new Point(p.x + 1, p.y);
-            adjacent.add(centerRight);
+        if(p.x + 1 < ROW){
+            Block centerRight = findBlock(p.x + 1, p.y);
+            adjBlocks.add(centerRight);
         }
 
         //Right Block
-        if(p.x - 1 >= 0 && p.y + 1 < ROW){
-            Point belowLeft = new Point(p.x - 1, p.y + 1);
-            adjacent.add(belowLeft);
+        if(p.x - 1 >= 0 && p.y + 1 < COL){
+            Block belowLeft = findBlock(p.x - 1, p.y + 1);
+            adjBlocks.add(belowLeft);
         }
-        if(p.y + 1 < ROW){
-            Point belowCenter = new Point(p.x, p.y + 1);
-            adjacent.add(belowCenter);
+        if(p.y + 1 < COL){
+            Block belowCenter = findBlock(p.x, p.y + 1);
+            adjBlocks.add(belowCenter);
         }
-        if(p.x + 1 < COL && p.y + 1 < ROW){
-            Point belowRight = new Point(p.x + 1, p.y + 1);
-            adjacent.add(belowRight);
+        if(p.x + 1 < ROW && p.y + 1 < COL){
+            Block belowRight = findBlock(p.x + 1, p.y + 1);
+            adjBlocks.add(belowRight);
         }
 
-        return adjacent;
+        return adjBlocks;
     }
     //return the number of mine at a block
     public void setAdjacentMine(){
@@ -134,7 +136,7 @@ public class Grid {
 
             //aboveRight
             Point aboveRight = new Point(p.x + 1, p.y - 1);
-            if(aboveRight.x < COL && aboveRight.y >= 0 && randomFour.contains(aboveRight)){
+            if(aboveRight.x < ROW && aboveRight.y >= 0 && randomFour.contains(aboveRight)){
                 count++;
             }
 
@@ -146,25 +148,25 @@ public class Grid {
 
             //centerRight;
             Point centerRight = new Point(p.x + 1, p.y);
-            if(centerRight.x < COL && randomFour.contains(centerRight)){
+            if(centerRight.x < ROW && randomFour.contains(centerRight)){
                 count++;
             }
 
             //belowLeft
             Point belowLeft = new Point(p.x - 1, p.y + 1);
-            if(belowLeft.x >= 0 && belowLeft.y < ROW && randomFour.contains(belowLeft)){
+            if(belowLeft.x >= 0 && belowLeft.y < COL && randomFour.contains(belowLeft)){
                 count++;
             }
 
             //belowCenter
             Point belowCenter = new Point(p.x, p.y + 1);
-            if(belowCenter.y < ROW && randomFour.contains(belowCenter)){
+            if(belowCenter.y < COL && randomFour.contains(belowCenter)){
                 count++;
             }
 
             //belowRight
             Point belowRight = new Point(p.x + 1, p.y + 1);
-            if(belowRight.x < COL && belowRight.y < ROW && randomFour.contains(belowRight)){
+            if(belowRight.x < ROW && belowRight.y < COL && randomFour.contains(belowRight)){
                 count++;
             }
 
