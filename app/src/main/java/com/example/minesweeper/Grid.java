@@ -18,19 +18,22 @@ public class Grid {
     public Grid(int ROW, int COL){
         this.ROW = ROW;
         this.COL = COL;
-        for(int i = 0; i < COL; i++){
-            for(int j = 0; j < ROW; j++){
+        blocks = new ArrayList<>();
+        for(int i = 0; i < ROW; i++){
+            for(int j = 0; j < COL; j++){
                 Point point = new Point(i,j);
                 Block newBlock = new Block(point); //initialize all new Block with empty value
                 blocks.add(newBlock);
             }
         }
+        this.placeMine();
     }
+
     public Block getBlock(int index){
         return blocks.get(index);
     }
     public Block findBlock(int row, int col){
-        return blocks.get(row*COL + col);
+        return blocks.get(row * COL + col);
     }
     public void placeMine(){
         Random rand = new Random();
@@ -52,20 +55,22 @@ public class Grid {
 
         //place the bomb into the grid
         for(Point mine: randomFour){
-            Block block_mine = findBlock(mine.y, mine.x);
+            Block block_mine = findBlock(mine.x, mine.y);
             block_mine.setMine(true);
         }
 
         setAdjacentMine();
     }
-    public void placeFlag(Block b){
+    public boolean placeFlag(Block b){
         if(FLAGS != 0){
             b.setFlagged(true);
             FLAGS--;
+            return true;
         }
+        return false;
     }
     //return a list of adjacent block
-    public ArrayList<Point> adjacent (Block block) {
+    public ArrayList<Point> getAdjBlocks(Block block) {
         Point p = block.getPoint();
         ArrayList<Point> adjacent = new ArrayList<>();
 

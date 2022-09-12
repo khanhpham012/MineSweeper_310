@@ -7,7 +7,7 @@ public class Block {
 
     private int adjMine;
     private final Point point;
-    private boolean isViewed;
+    private boolean isViewed; //when user already view that block
     private boolean isFlagged;
     private boolean mine;
 
@@ -42,5 +42,14 @@ public class Block {
         this.mine = false;
         this.isViewed = false;
         this.isFlagged = false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof Block)) return false;
+
+        Block b = (Block) o;
+        return b.point.equals(point);
     }
 }

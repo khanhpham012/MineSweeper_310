@@ -8,23 +8,20 @@ import android.widget.TextView;
 import android.view.*;
 import android.graphics.*;
 import android.os.*;
+
 import java.util.*;
-import java.util.ArrayDeque;
-import android.util.Log;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private int clock = 0;
-    private boolean isAxe = true;
+    private boolean axeMode = true;
     private boolean running = false;
-    private final Integer numFlag = 4;
     private final Integer COL = 8;
     private final Integer ROW = 10;
-
-    private ArrayList<Point> randomFour = RandMine.getList();
-    private Grid grid = new Grid(COL, ROW);
+    private final Grid grid = new Grid(ROW, COL);
     private ArrayList<TextView> cell_tvs;
+
     private int findIndexOfCellTextView(TextView tv) {
         for (int n = 0; n < cell_tvs.size(); n++) {
             if (cell_tvs.get(n) == tv)
@@ -33,16 +30,23 @@ public class MainActivity extends AppCompatActivity {
         return -1;
     }
 
+    private TextView findTextView(int row, int col) {
+        return cell_tvs.get(row * COL + col);
+    }
+
     private void onClickStart() {
         running = true;
     }
+
     private void onClickStop(View view) {
         running = false;
     }
+
     private void onClickClear(View view) {
         running = false;
         clock = 0;
     }
+
     private void runTimer() {
         final TextView timeView = (TextView) findViewById(R.id.textView11);
         final Handler handler = new Handler();
@@ -63,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     //search all of the block that has 0 mines
     public ArrayList<Point> BFS(Block block){
 
@@ -77,14 +80,13 @@ public class MainActivity extends AppCompatActivity {
         while(!queue.isEmpty()){
             Point s = queue.peek();
             queue.remove(s);
-            ArrayList<Point> adjNode = grid.adjacent(block);
+            ArrayList<Point> adjBlocks = grid.getAdjBlocks(block);
 
-            for(Point node: adjNode){
+            for(Point node: adjBlocks){
                 if(!visited.contains(node)){
-
-
-                    int countMine = countMine(node);
-                    if(countMine == 0 && !result.contains(node)){
+                    Block findNode = grid.findBlock(node.x, node.y);
+                    int numMines = findNode.getAdjMine();
+                    if(numMines == 0 && !result.contains(node)){
                         result.add(node);
                     }
                     queue.add(node);
@@ -95,100 +97,74 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
-    //breadth first search for the empty cells
-    //toggle between the flags to put flags - pickaxe to flag
-    //flags need to be 4 and decrement and increments
-    // Start as green
-    public void onClickAxeFlag(View view){ //switch flag and axe when clicked
+    //switch between flag and axe mode
+    public void onClickMode(View view){
         TextView tv = (TextView) view;
-        if (tv.getText().toString().equals("⛏")){
-            System.out.println("clicked");
-            tv.setText("\uD83D\uDEA9"); //set to flag
-            isAxe = false;
+        //flag -> axe
+        if(tv.getText().toString().equals("\uD83D\uDEA9")){
+            tv.setText("\u26CF");
+            axeMode = true;
         }
-        else { //if flag, set to pick
-            tv.setText("⛏"); //set to axe
-            isAxe = true;
+        //axe -> flag
+        else{
+            tv.setText("\uD83D\uDEA9");
+            axeMode = false;
         }
     }
 
     public void onClickTV(View view) {
         TextView tv = (TextView) view;
-        grid.placeMine();
 
         int n = findIndexOfCellTextView(tv);
-        System.out.println("n: " + n);
+        int row = n / COL;
+        int col = n % COL;
+        Block block = grid.findBlock(row, col);
 
-        //tv.setText(String.valueOf(i) + String.valueOf(j));
-        //tv.setText(getString(R.string.mine));
 
-        System.out.println(randomFour);
-
-        if(grid.getBlock(n).getMine() == true){
-            System.out.println("bomb");
-            tv.setText("\uD83D\uDCA3"); //place mine
-            tv.setBackgroundColor(Color.RED);
-            //trigger game over message
+        if(axeMode && block.getAdjMine() == 0){
+            //find blocks that has 0 mines
+            ArrayList<Point> nodes = BFS(block);
+            for(Point node: nodes){
+                TextView neighbor = findTextView(node.x, node.y);
+                neighbor.setText("");
+                neighbor.setTextColor(Color.LTGRAY);
+                neighbor.setBackgroundColor(Color.LTGRAY);
+            }
         }
-        else if (tv.getCurrentTextColor() == Color.GRAY) {
-            tv.setTextColor(Color.GREEN);
-            tv.setBackgroundColor(Color.parseColor("lime"));
-//            if(hints.get(n) != null ){
-//                System.out.println("number");
-//              //  tv.setText((Integer) hints.get(n));
-//                tv.setTextColor(Color.WHITE);
-//            }
-        } else { //if not mine
-            tv.setTextColor(Color.GRAY);
-            tv.setBackgroundColor(Color.LTGRAY);
-        }
-        //if(randomFour.contains(n+1)) //think about edge cases
+        //currently on axe mode and block does not have a mine
+        else if(axeMode && !block.getMine()){
+            String numMines = String.valueOf(block.getAdjMine());
 
-
-        //else if is mine -> put mine and game over
-
-        onClickStart();
-        /**
-        ArrayList<Point> hints = BFS(,)
-
-        int n = findIndexOfCellTextView(tv);
-
-        System.out.println(randomFour);
-        //System.out.println("preloop: " + hints.containsKey(n));
-
-        if(hints.containsKey(n) && hints.get(n) != null && isAxe == true){ //reveal box if axe is true
-            String number = hints.get(n).toString();
-            tv.setText(number);
+            block.setViewed(true);
+            tv.setText(numMines);
             tv.setTextColor(Color.WHITE);
-
             tv.setBackgroundColor(Color.LTGRAY);
         }
-        if(randomFour.contains(n) && isAxe == true){ //if lands on a mine and has an axe
-            System.out.println("bomb");
+        //currently on axe mode and block has a mine
+        else if(axeMode && block.getMine()){
+            block.setViewed(true);
             tv.setText("\uD83D\uDCA3"); //place mine
             tv.setBackgroundColor(Color.RED);
-            //trigger game over message
+            onClickStop(view); //stop the clock and output a message "Game over"
         }
-        else if(isAxe== true && tv.getText().toString() == "\uD83D\uDEA9"){ //if there is already a flag, get off the flag
+        //currently on flag mode and the user places a flag
+        else if (!axeMode && grid.placeFlag(block) && tv.getCurrentTextColor() == Color.GREEN) {
+            tv.setText("\uD83D\uDEA9");
+            //TextView timeView = (TextView) findViewById(R.id.textView10);
+            //numFlags --; //insert logic for if flag count is less than 0
+            //countFlags();
+        }
+        //currently on flag mode and the user wants to remove the current flag with green block
+        else if(!axeMode && !grid.placeFlag(block) && tv.getText().equals("\uD83D\uDEA9")){
             tv.setText("");
-            flagCount +=1;
         }
-        else if (tv.getCurrentTextColor() == Color.GREEN && isAxe == true) { //unveiling when axe is true
+        //currently on axe mode and
+        else if (axeMode && tv.getCurrentTextColor() == Color.GREEN) {
             tv.setTextColor(Color.LTGRAY);
             tv.setBackgroundColor(Color.LTGRAY);
-
-        }
-        else if (tv.getCurrentTextColor() == Color.GREEN && isAxe == false) { //placing flags
-            tv.setText("\uD83D\uDEA9");
-            flagCount-=1; //insert logic for if flag count is less than 0
-            //   countFlags();
-            findViewById(R.id.textView10);
-
-
         }
 
         onClickStart();
-         **/
     }
 
 
@@ -224,25 +200,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        //calcHints();
         runTimer();
     }
-
-    public void onClickEmptyFlag(View view){
-        TextView tv = (TextView) view;
-        if (tv.getText().toString().equals("")){
-            System.out.println("clicked");
-            tv.setText("\uD83D\uDEA9"); //set to flag
-            isAxe = false;
-        }
-        else { //if flag, set to pick
-            tv.setText("⛏"); //set to axe
-            isAxe = true;
-        }
-    }
-
-
-
 
 }
 
