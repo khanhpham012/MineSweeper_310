@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void runTimer() {
-        final TextView timeView = (TextView) findViewById(R.id.textView11);
+        final TextView timeView = (TextView) findViewById(R.id.timer);
         final Handler handler = new Handler();
 
         handler.post(new Runnable() {
@@ -105,8 +105,15 @@ public class MainActivity extends AppCompatActivity {
             TextView neighbor = cell_tvs.get(row_p * COL + col_p);
 
             adjBlock.setViewed(true);
-            neighbor.setText(String.valueOf(adjBlock.getAdjMine()));
-            neighbor.setTextColor(Color.BLACK);
+            //neighbor.setText(String.valueOf(adjBlock.getAdjMine()));
+            //neighbor.setTextColor(Color.BLACK);
+            if(adjBlock.getAdjMine() == 0){
+                neighbor.setText("");
+                neighbor.setTextColor(Color.LTGRAY);
+            }else{
+                neighbor.setText(String.valueOf(adjBlock.getAdjMine()));
+                neighbor.setTextColor(Color.BLACK);
+            }
             neighbor.setBackgroundColor(Color.LTGRAY);
         }
     }
@@ -126,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //clear the cells and replay the game
+
     public void onClickTV(View view) {
         TextView tv = (TextView) view;
 
@@ -134,52 +143,51 @@ public class MainActivity extends AppCompatActivity {
         int col = n % COL;
         Block block = grid.findBlock(row, col);
 
-        //BFS
-        if(axeMode && block.getAdjMine() == 0 && !tv.getText().equals("\uD83D\uDEA9")){
-            tv.setText("");
-            tv.setTextColor(Color.LTGRAY);
-            tv.setBackgroundColor(Color.LTGRAY);
-            BFS(block);
+        //if on axe mode
+        if(axeMode){
+            //if the block is NOT flagged
+            if(!tv.getText().equals("\uD83D\uDEA9")){
+                //if the block has a mine
+                if(!block.getMine()){
+                    //BFS
+                    if(block.getAdjMine() == 0 ){
+                        tv.setText("");
+                        tv.setTextColor(Color.LTGRAY);
+                        tv.setBackgroundColor(Color.LTGRAY);
+                        BFS(block);
+                    }
+                    else{
+                        String numMines = String.valueOf(block.getAdjMine());
+                        block.setViewed(true);
+                        tv.setText(numMines);
+                        tv.setTextColor(Color.BLACK);
+                        tv.setBackgroundColor(Color.LTGRAY);
+                    }
+                }
+                //if the block doesn't have a mine
+                else{
+                    block.setViewed(true);
+                    tv.setText("\uD83D\uDCA3"); //place mine
+                    tv.setBackgroundColor(Color.RED);
+                    onClickStop(view); //stop the clock and output a message "Game over"
+                }
+            }
         }
-        //currently on axe mode and block does not have a mine
-        if(axeMode && !block.getMine() && !tv.getText().equals("\uD83D\uDEA9")){
-            String numMines = String.valueOf(block.getAdjMine());
-
-            block.setViewed(true);
-            tv.setText(numMines);
-            tv.setTextColor(Color.WHITE);
-            tv.setBackgroundColor(Color.LTGRAY);
-        }
-        //currently on axe mode and block has a mine
-        else if(axeMode && block.getMine() && !tv.getText().equals("\uD83D\uDEA9")){
-            block.setViewed(true);
-            tv.setText("\uD83D\uDCA3"); //place mine
-            tv.setBackgroundColor(Color.RED);
-            onClickStop(view); //stop the clock and output a message "Game over"
-        }
-        //currently on flag mode and the user wants to remove the current flag with green block
-        else if(!axeMode  && tv.getText().equals("\uD83D\uDEA9")){ //&& !grid.placeFlag(block)
-            tv.setText("");
-        }
-        //currently on flag mode and the user places a flag
-        else if (!axeMode  && tv.getCurrentTextColor() == Color.GREEN) { //&& grid.placeFlag(block)
-            tv.setText("\uD83D\uDEA9");
-            //TextView timeView = (TextView) findViewById(R.id.textView10);
-            //numFlags --; //insert logic for if flag count is less than 0
-            //countFlags();
-        }
-        //currently on axe mode and
-        else if (!axeMode && tv.getCurrentTextColor() == Color.GREEN && tv.getText().equals("\uD83D\uDEA9")) {
-            tv.setText("");
-            tv.setTextColor(Color.LTGRAY);
-            tv.setBackgroundColor(Color.LTGRAY);
+        //if on flag mode
+        else{
+            //the user wants to remove the current flag with green block
+            if(tv.getText().equals("\uD83D\uDEA9")){ //&& !grid.placeFlag(block)
+                tv.setText("");
+            }
+            //the user places a flag
+            else if (tv.getCurrentTextColor() == Color.GREEN) { //&& grid.placeFlag(block)
+                tv.setText("\uD83D\uDEA9");
+            }
         }
 
         onClickStart();
     }
 
-    // save the TextViews of all cells in an array, so later on,
-    // when a TextView is clicked, we know which cell it is
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
