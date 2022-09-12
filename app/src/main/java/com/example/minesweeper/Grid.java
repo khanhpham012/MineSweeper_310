@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.Set;
 
 public class Grid {
-    private ArrayList<Block> blocks;
+    private final ArrayList<Block> blocks;
     private ArrayList<Point> randomFour;
     private final int COL;
     private final int ROW;

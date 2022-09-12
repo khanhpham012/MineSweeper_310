@@ -31,10 +31,6 @@ public class MainActivity extends AppCompatActivity {
         return -1;
     }
 
-    private TextView findTextView(int row, int col) {
-        return cell_tvs.get(row * COL + col);
-    }
-
     private void onClickStart() {
         running = true;
     }
@@ -49,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void runTimer() {
-        final TextView timeView = (TextView) findViewById(R.id.timer);
+        final TextView timeView = findViewById(R.id.timer);
         final Handler handler = new Handler();
 
         handler.post(new Runnable() {
@@ -178,14 +174,14 @@ public class MainActivity extends AppCompatActivity {
             if(tv.getText().equals("\uD83D\uDEA9")){ //&& !grid.placeFlag(block)
                 tv.setText("");
                 FLAGS++;
-                TextView flagView = (TextView) findViewById(R.id.numFlags);
+                TextView flagView = findViewById(R.id.numFlags);
                 flagView.setText(String.valueOf(FLAGS));
             }
             //the user places a flag
             else if (tv.getCurrentTextColor() == Color.GREEN) { //&& grid.placeFlag(block)
                 tv.setText("\uD83D\uDEA9");
                 FLAGS--;
-                TextView flagView = (TextView) findViewById(R.id.numFlags);
+                TextView flagView = findViewById(R.id.numFlags);
                 flagView.setText(String.valueOf(FLAGS));
             }
         }
@@ -198,8 +194,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        cell_tvs = new ArrayList<TextView>();
-        GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
+        cell_tvs = new ArrayList<>();
+        GridLayout grid = findViewById(R.id.gridLayout);
         LayoutInflater li = LayoutInflater.from(this);
 
         for (int i = 0; i < ROW; i++) { //rows
