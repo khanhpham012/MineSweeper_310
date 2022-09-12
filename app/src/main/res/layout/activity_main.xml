@@ -9,7 +9,7 @@
     tools:context=".MainActivity">
 
     <androidx.gridlayout.widget.GridLayout
-        android:id="@+id/gridLayout01"
+        android:id="@+id/gridLayout"
         android:layout_width="320dp"
         android:layout_height="500dp"
         android:layout_marginStart="32dp"
@@ -25,85 +25,86 @@
         app:layout_constraintTop_toTopOf="parent"
         >
 
-        <TextView
-            android:id="@+id/flag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="2dp"
-            android:layout_marginBottom="2dp"
-            android:height="35dp"
-            android:width="35dp"
-            android:text="@string/flag"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            app:layout_column="1"
-            app:layout_row="0" />
-
-        <TextView
-            android:id="@+id/numFlags"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="2dp"
-            android:layout_marginBottom="2dp"
-            android:height="35dp"
-            android:width="35dp"
-            android:text="4"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            app:layout_column="3"
-            app:layout_row="0" />
-
-        <TextView
-            android:id="@+id/clock"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="2dp"
-            android:layout_marginBottom="2dp"
-            android:height="35dp"
-            android:width="35dp"
-            android:text="@string/clock"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            app:layout_column="4"
-            app:layout_row="0" />
-
-
-
-        <TextView
-            android:id="@+id/timer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="2dp"
-            android:layout_marginBottom="2dp"
-            android:height="35dp"
-            android:width="35dp"
-            android:text="11"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            app:layout_column="6"
-            app:layout_row="0" />
-
     </androidx.gridlayout.widget.GridLayout>
 
     <TextView
-        android:id="@+id/activity_main_hammer"
+        android:id="@+id/flag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginBottom="2dp"
+        android:width="73dp"
+        android:height="35dp"
+        android:text="@string/flag"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_column="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/gridLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_row="0" />
+
+    <TextView
+        android:id="@+id/numFlags"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:width="73dp"
+        android:height="35dp"
+        android:text="4"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_column="3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/gridLayout"
+        app:layout_constraintStart_toEndOf="@+id/flag"
+        app:layout_row="0" />
+
+    <TextView
+        android:id="@+id/clock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:width="73dp"
+        android:height="35dp"
+        android:text="@string/clock"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_column="4"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/gridLayout"
+        app:layout_constraintStart_toEndOf="@+id/numFlags"
+        app:layout_row="0" />
+
+
+    <TextView
+        android:id="@+id/timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:width="73dp"
+        android:height="35dp"
+        android:text="11"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_column="6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/gridLayout"
+        app:layout_constraintStart_toEndOf="@+id/clock"
+        app:layout_row="0" />
+
+    <TextView
+        android:id="@+id/activity_main_axe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="48dp"
+        android:onClick="onClickMode"
         android:text="@string/axe"
         android:textSize="45sp"
-        android:onClick="onClickMode"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gridLayout01"
-        app:layout_constraintVertical_bias="0.695" />
+        app:layout_constraintTop_toBottomOf="@+id/gridLayout"
+        app:layout_constraintVertical_bias="0.3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

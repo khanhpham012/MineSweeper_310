@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean running = false;
     private final Integer COL = 8;
     private final Integer ROW = 10;
+    private Integer FLAGS = 4;
     private final Grid grid = new Grid(ROW, COL);
     private ArrayList<TextView> cell_tvs;
 
@@ -99,14 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
         for(Block adjBlock: adjBlocks){
 
+            adjBlock.setViewed(true);
             Point p = adjBlock.getPoint();
             int row_p = p.x;
             int col_p = p.y;
             TextView neighbor = cell_tvs.get(row_p * COL + col_p);
 
-            adjBlock.setViewed(true);
-            //neighbor.setText(String.valueOf(adjBlock.getAdjMine()));
-            //neighbor.setTextColor(Color.BLACK);
             if(adjBlock.getAdjMine() == 0){
                 neighbor.setText("");
                 neighbor.setTextColor(Color.LTGRAY);
@@ -147,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
         if(axeMode){
             //if the block is NOT flagged
             if(!tv.getText().equals("\uD83D\uDEA9")){
-                //if the block has a mine
+                //if the block does NOT has a mine
                 if(!block.getMine()){
                     //BFS
                     if(block.getAdjMine() == 0 ){
@@ -164,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                         tv.setBackgroundColor(Color.LTGRAY);
                     }
                 }
-                //if the block doesn't have a mine
+                //if the block has a mine
                 else{
                     block.setViewed(true);
                     tv.setText("\uD83D\uDCA3"); //place mine
@@ -178,10 +177,16 @@ public class MainActivity extends AppCompatActivity {
             //the user wants to remove the current flag with green block
             if(tv.getText().equals("\uD83D\uDEA9")){ //&& !grid.placeFlag(block)
                 tv.setText("");
+                FLAGS++;
+                TextView flagView = (TextView) findViewById(R.id.numFlags);
+                flagView.setText(String.valueOf(FLAGS));
             }
             //the user places a flag
             else if (tv.getCurrentTextColor() == Color.GREEN) { //&& grid.placeFlag(block)
                 tv.setText("\uD83D\uDEA9");
+                FLAGS--;
+                TextView flagView = (TextView) findViewById(R.id.numFlags);
+                flagView.setText(String.valueOf(FLAGS));
             }
         }
 
@@ -194,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         cell_tvs = new ArrayList<TextView>();
-        GridLayout grid = (GridLayout) findViewById(R.id.gridLayout01);
+        GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
         LayoutInflater li = LayoutInflater.from(this);
 
         for (int i = 0; i < ROW; i++) { //rows
