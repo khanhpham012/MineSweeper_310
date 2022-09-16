@@ -15,11 +15,14 @@ import java.util.*;
 public class MainActivity extends AppCompatActivity {
 
     private int clock = 0;
+    private final int COL = 8;
+    private final int ROW = 10;
+    private int FLAGS = 4;
+    private int numViewed = 0; //number of viewed blocks
+    private String message = "";
     private boolean axeMode = true;
     private boolean running = false;
-    private final Integer COL = 8;
-    private final Integer ROW = 10;
-    private Integer FLAGS = 4;
+    private boolean playAgain = false;
     private final Grid grid = new Grid(ROW, COL);
     private ArrayList<TextView> cell_tvs;
 
@@ -64,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     //search all of the block that has 0 mines
     public void BFS(Block block){
 
@@ -96,7 +100,9 @@ public class MainActivity extends AppCompatActivity {
 
         for(Block adjBlock: adjBlocks){
 
+            if (!adjBlock.isViewed()) numViewed++;
             adjBlock.setViewed(true);
+
             Point p = adjBlock.getPoint();
             int row_p = p.x;
             int col_p = p.y;
@@ -137,18 +143,27 @@ public class MainActivity extends AppCompatActivity {
         int row = n / COL;
         int col = n % COL;
         Block block = grid.findBlock(row, col);
+        TextView flagView = findViewById(R.id.numFlags);
+        TextView timeView = findViewById(R.id.timer);
 
+        /*
+        while(!playAgain){
+
+        }*/
         //if on axe mode
         if(axeMode){
             //if the block is NOT flagged
             if(!tv.getText().equals("\uD83D\uDEA9")){
                 //if the block does NOT has a mine
                 if(!block.getMine()){
+                    if (!running) onClickStart();
                     //BFS
-                    if(block.getAdjMine() == 0 ){
+                    if(block.getAdjMine() == 0){
+                        block.setViewed(true);
                         tv.setText("");
                         tv.setTextColor(Color.LTGRAY);
                         tv.setBackgroundColor(Color.LTGRAY);
+                        numViewed++;
                         BFS(block);
                     }
                     else{
@@ -157,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                         tv.setText(numMines);
                         tv.setTextColor(Color.BLACK);
                         tv.setBackgroundColor(Color.LTGRAY);
+                        numViewed++;
                     }
                 }
                 //if the block has a mine
@@ -164,29 +180,39 @@ public class MainActivity extends AppCompatActivity {
                     block.setViewed(true);
                     tv.setText("\uD83D\uDCA3"); //place mine
                     tv.setBackgroundColor(Color.RED);
-                    onClickStop(view); //stop the clock and output a message "Game over"
+                    onClickStop(timeView);
+                    message = "Used " + timeView.getText() + " seconds.\n" +
+                              "You lose.\n";
                 }
             }
         }
         //if on flag mode
         else{
+            if (!running) onClickStart();
             //the user wants to remove the current flag with green block
             if(tv.getText().equals("\uD83D\uDEA9")){ //&& !grid.placeFlag(block)
                 tv.setText("");
                 FLAGS++;
-                TextView flagView = findViewById(R.id.numFlags);
+
                 flagView.setText(String.valueOf(FLAGS));
             }
             //the user places a flag
             else if (tv.getCurrentTextColor() == Color.GREEN) { //&& grid.placeFlag(block)
                 tv.setText("\uD83D\uDEA9");
                 FLAGS--;
-                TextView flagView = findViewById(R.id.numFlags);
                 flagView.setText(String.valueOf(FLAGS));
             }
         }
 
-        onClickStart();
+        if(numViewed == 76){
+            onClickStop(timeView);
+            message = "Used " + timeView.getText() + " seconds.\n" +
+                      "You won.\n" +
+                      "Good job!";
+        }
+
+        System.out.println("Number of Mines Viewed: " + numViewed);
+
     }
 
     @Override
@@ -222,5 +248,10 @@ public class MainActivity extends AppCompatActivity {
         runTimer();
     }
 
-}
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putInt("clock", clock);
+        savedInstanceState.putBoolean("running", running);
+    }
 
+}
