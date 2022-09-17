@@ -11,13 +11,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:textSize="32sp"
+        android:layout_marginBottom="56dp"
         android:text="TextView"
+        android:textSize="32sp"
+        app:layout_constraintBottom_toTopOf="@+id/playAgainButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/playAgainButton" />
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/playAgainButton"
@@ -27,7 +28,7 @@
         android:layout_marginTop="196dp"
         android:layout_marginEnd="32dp"
         android:onClick="backToMain"
-        android:text="PLAY AGAIN"
+        android:text="@string/play_again"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

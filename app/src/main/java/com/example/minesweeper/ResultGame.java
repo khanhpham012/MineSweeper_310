@@ -1,6 +1,7 @@
 package com.example.minesweeper;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -15,10 +16,13 @@ public class ResultGame extends AppCompatActivity {
         setContentView(R.layout.activity_display_message);
 
         Intent intent = getIntent();
-        String message = intent.getStringExtra("com.minesweeper.MESSAGE");
+        String message = intent.getStringExtra("com.example.minesweeper.MESSAGE");
+        //message = message;
+        System.out.println(message);
 
         TextView textView = (TextView) findViewById(R.id.resultMessage);
         textView.setText(message);
+        textView.setTextColor(Color.BLACK);
     }
 
     public void backToMain(View view) {
