@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.gridlayout.widget.GridLayout;
 
 import android.content.Intent;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.view.*;
 import android.graphics.*;
@@ -19,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
     private final int ROW = 10;
     private int FLAGS = 4;
     private int numViewed = 0; //number of viewed blocks
-    private String message = "";
     private boolean axeMode = true;
     private boolean running = false;
     private boolean playAgain = false;
@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     //search all of the block that has 0 mines
     public void BFS(Block block){
@@ -145,12 +144,8 @@ public class MainActivity extends AppCompatActivity {
         Block block = grid.findBlock(row, col);
         TextView flagView = findViewById(R.id.numFlags);
         TextView timeView = findViewById(R.id.timer);
+        String message = "";
 
-        /*
-        while(!playAgain){
-
-        }*/
-        //if on axe mode
         if(axeMode){
             //if the block is NOT flagged
             if(!tv.getText().equals("\uD83D\uDEA9")){
@@ -183,6 +178,8 @@ public class MainActivity extends AppCompatActivity {
                     onClickStop(timeView);
                     message = "Used " + timeView.getText() + " seconds.\n" +
                               "You lose.\n";
+                    System.out.println(message);
+                    sendMessage(view, message);
                 }
             }
         }
@@ -209,6 +206,8 @@ public class MainActivity extends AppCompatActivity {
             message = "Used " + timeView.getText() + " seconds.\n" +
                       "You won.\n" +
                       "Good job!";
+            System.out.println(message);
+            sendMessage(view, message);
         }
 
         System.out.println("Number of Mines Viewed: " + numViewed);
@@ -248,10 +247,11 @@ public class MainActivity extends AppCompatActivity {
         runTimer();
     }
 
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putInt("clock", clock);
-        savedInstanceState.putBoolean("running", running);
-    }
+    public void sendMessage(View view, String message){
 
+        Intent intent = new Intent(this, ResultGame.class);
+        intent.putExtra("com.example.minesweeper.MESSAGE", message);
+
+        startActivity(intent);
+    }
 }
